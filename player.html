@@ -3,7 +3,64 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Autonomyx Music Player</title>
+<title>AutonomyX Music Player — AI-Powered Music Discovery, Streaming & Lyrics</title>
+<meta name="description" content="AI-powered music player by AutonomyX. Search songs, stream YouTube & Spotify, view lyrics, generate mood playlists, and share music with friends. Free and open source.">
+<meta name="keywords" content="music player, AI music, lyrics, mood playlist, YouTube player, Spotify, AutonomyX, open source music player">
+<meta name="author" content="AutonomyX">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://music.openautonomyx.com">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="AutonomyX Music Player — AI-Powered Music Discovery">
+<meta property="og:description" content="Search songs, stream YouTube & Spotify, view lyrics, generate mood playlists. Free and open source by AutonomyX.">
+<meta property="og:url" content="https://music.openautonomyx.com">
+<meta property="og:site_name" content="AutonomyX">
+<meta property="og:image" content="https://www.openautonomyx.com/image/layout_set_logo?img_id=72886">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AutonomyX Music Player — AI-Powered Music Discovery">
+<meta name="twitter:description" content="Search songs, stream YouTube & Spotify, view lyrics, generate mood playlists. Free and open source.">
+<meta name="twitter:image" content="https://www.openautonomyx.com/image/layout_set_logo?img_id=72886">
+
+<!-- JSON-LD Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "AutonomyX Music Player",
+  "description": "AI-powered music player with search, streaming, lyrics, and mood-based playlist generation.",
+  "url": "https://music.openautonomyx.com",
+  "applicationCategory": "MultimediaApplication",
+  "operatingSystem": "Web Browser",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "creator": {
+    "@type": "Organization",
+    "name": "AutonomyX",
+    "url": "https://www.openautonomyx.com"
+  },
+  "featureList": [
+    "AI-powered song search",
+    "YouTube and Spotify URL support",
+    "Real-time lyrics display",
+    "Mood-based playlist generation",
+    "Audio file upload and playback",
+    "Waveform visualization",
+    "Shareable music links"
+  ],
+  "screenshot": "https://www.openautonomyx.com/image/layout_set_logo?img_id=72886",
+  "softwareVersion": "2.0",
+  "license": "https://opensource.org/licenses/MIT"
+}
+</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
 
@@ -29,16 +86,16 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 32px 16px 80px;
+  padding: 24px 16px 80px;
 }
 
 .header {
   width: 100%;
-  max-width: 780px;
+  max-width: 860px;
   display: flex;
   align-items: baseline;
   gap: 12px;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
 .logo {
@@ -48,518 +105,286 @@ body {
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
+.logo span { color: var(--muted); font-size: 11px; margin-left: 8px; letter-spacing: 0.04em; text-transform: none; }
 
-.logo span {
-  color: var(--muted);
-  font-size: 11px;
-  margin-left: 8px;
-  letter-spacing: 0.04em;
-  text-transform: none;
+.share-btn {
+  margin-left: auto;
+  padding: 6px 14px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--cyan);
+  border: 1px solid var(--border);
+  background: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.15s;
 }
+.share-btn:hover { background: rgba(0,207,255,0.08); }
 
-.player-shell {
+.shell {
   width: 100%;
-  max-width: 780px;
+  max-width: 860px;
   background: var(--bg2);
   border: 1px solid var(--border);
   border-radius: 4px;
   overflow: hidden;
 }
 
-/* TABS */
-.tabs {
+/* INPUT ROW */
+.input-row {
   display: flex;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg);
+  gap: 8px;
+  padding: 20px 24px 0;
 }
-
-.tab {
-  padding: 14px 24px;
-  font-size: 12px;
-  font-family: 'IBM Plex Mono', monospace;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-  cursor: pointer;
-  border: none;
-  background: none;
-  border-bottom: 2px solid transparent;
-  transition: color 0.2s, border-color 0.2s;
-}
-
-.tab:hover { color: var(--text); }
-.tab.active { color: var(--cyan); border-bottom-color: var(--cyan); }
-
-/* TAB PANELS */
-.panel { display: none; padding: 28px; }
-.panel.active { display: block; }
-
-/* CANVAS */
-.waveform-wrap {
-  width: 100%;
-  height: 100px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  margin-bottom: 20px;
-  position: relative;
-  overflow: hidden;
-}
-
-canvas {
-  width: 100%;
-  height: 100%;
-  display: block;
-  opacity: 1;
-  transition: opacity 0.3s;
-}
-
-canvas.paused { opacity: 0.38; }
-
-.waveform-idle {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px;
-  color: var(--muted);
-  letter-spacing: 0.1em;
-  pointer-events: none;
-}
-
-/* TRACK INFO */
-.track-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 14px;
-}
-
-.track-name {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 70%;
-}
-
-.track-time {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 12px;
-  color: var(--muted);
-}
-
-/* SEEK */
-.seek-wrap { margin-bottom: 18px; }
-
-input[type=range] {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 3px;
-  background: var(--bg3);
-  border-radius: 2px;
-  outline: none;
-  cursor: pointer;
-}
-
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 12px; height: 12px;
-  border-radius: 50%;
-  background: var(--cyan);
-  cursor: pointer;
-  box-shadow: 0 0 8px var(--glow);
-  transition: transform 0.1s;
-}
-
-input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.3); }
-
-/* CONTROLS ROW */
-.controls {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.btn-play {
-  width: 44px; height: 44px;
-  border-radius: 50%;
-  border: 1.5px solid var(--cyan);
-  background: transparent;
-  color: var(--cyan);
-  font-size: 16px;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  transition: background 0.2s, box-shadow 0.2s;
-}
-
-.btn-play:hover {
-  background: rgba(0,207,255,0.08);
-  box-shadow: 0 0 16px var(--glow);
-}
-
-.vol-label {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-  color: var(--muted);
-  letter-spacing: 0.1em;
-  margin-left: auto;
-}
-
-.vol-wrap { display: flex; align-items: center; gap: 8px; }
-
-.vol-wrap input { width: 80px; }
-
-/* DROP ZONE */
-.drop-zone {
-  border: 1.5px dashed var(--border);
-  border-radius: 3px;
-  padding: 32px;
-  text-align: center;
-  cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
-  margin-bottom: 24px;
-}
-
-.drop-zone:hover, .drop-zone.drag-over {
-  border-color: var(--cyan);
-  background: rgba(0,207,255,0.04);
-}
-
-.drop-zone .drop-icon { font-size: 28px; margin-bottom: 8px; }
-.drop-zone p { font-size: 13px; color: var(--muted); }
-.drop-zone p strong { color: var(--text); }
-
-input[type=file] { display: none; }
-
-/* QUEUE */
-.queue { margin-top: 20px; }
-.queue-title {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 10px;
-}
-
-.queue-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: background 0.15s;
-  font-size: 13px;
-}
-
-.queue-item:hover { background: rgba(27,94,190,0.15); }
-.queue-item.active { background: rgba(0,207,255,0.08); color: var(--cyan); }
-.queue-item .qi-num {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-  color: var(--muted);
-  width: 18px;
-  flex-shrink: 0;
-}
-
-/* URL TAB */
-.url-row {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 22px;
-}
-
-.url-input {
+.input-main {
   flex: 1;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 3px;
-  padding: 10px 14px;
+  padding: 11px 14px;
   font-family: 'IBM Plex Mono', monospace;
   font-size: 12px;
   color: var(--text);
   outline: none;
   transition: border-color 0.2s;
 }
+.input-main:focus { border-color: var(--cyan); }
+.input-main::placeholder { color: var(--muted); }
 
-.url-input:focus { border-color: var(--cyan); }
-.url-input::placeholder { color: var(--muted); }
-
-.btn-load {
-  padding: 10px 20px;
+.btn-action {
+  padding: 10px 18px;
   background: var(--blue);
   border: none;
   border-radius: 3px;
-  color: #fff;
+  color: var(--text);
   font-family: 'IBM Plex Mono', monospace;
   font-size: 11px;
   letter-spacing: 0.08em;
   cursor: pointer;
-  transition: background 0.2s;
+  white-space: nowrap;
+  transition: background 0.15s;
 }
+.btn-action:hover { background: #2470d4; }
+.btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.btn-load:hover { background: #2470d8; }
-
-.error-card {
-  background: rgba(190,30,30,0.12);
-  border: 1px solid rgba(190,30,30,0.4);
+.btn-upload {
+  padding: 10px 18px;
+  background: none;
+  border: 1px solid var(--border);
   border-radius: 3px;
-  padding: 14px 16px;
-  font-size: 12px;
-  color: #f88;
-  margin-bottom: 20px;
-  display: none;
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
 }
+.btn-upload:hover { border-color: var(--cyan); color: var(--text); }
 
-/* MOOD TAB */
-.mood-textarea {
+input[type=file] { display: none; }
+
+/* PLAYER AREA */
+.player-area { padding: 16px 24px; }
+
+.waveform-wrap {
   width: 100%;
+  height: 80px;
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 3px;
-  padding: 14px;
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 14px;
-  color: var(--text);
-  resize: vertical;
-  min-height: 80px;
-  outline: none;
-  transition: border-color 0.2s;
   margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}
+canvas { width: 100%; height: 100%; display: block; opacity: 1; transition: opacity 0.3s; }
+canvas.paused { opacity: 0.38; }
+.waveform-idle {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+  color: var(--muted); letter-spacing: 0.1em; pointer-events: none;
 }
 
-.mood-textarea:focus { border-color: var(--blue); }
-.mood-textarea::placeholder { color: var(--muted); }
+.track-info { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.track-name { font-size: 14px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%; }
+.track-time { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--muted); }
 
-.mood-actions { display: flex; gap: 10px; margin-bottom: 24px; }
+.seek-wrap { margin-bottom: 12px; }
+input[type=range] { -webkit-appearance: none; width: 100%; height: 3px; background: var(--bg3); border-radius: 2px; outline: none; cursor: pointer; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--cyan); cursor: pointer; box-shadow: 0 0 8px var(--glow); }
 
-.btn-gen {
-  padding: 10px 24px;
-  background: var(--blue);
-  border: none;
-  border-radius: 3px;
-  color: #fff;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  cursor: pointer;
-  transition: background 0.2s;
+.controls { display: flex; align-items: center; gap: 14px; }
+.btn-play {
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 1.5px solid var(--cyan); background: transparent;
+  color: var(--cyan); font-size: 14px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background 0.2s;
 }
+.btn-play:hover { background: rgba(0,207,255,0.08); }
+.vol-wrap { display: flex; align-items: center; gap: 8px; }
+.vol-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.1em; margin-left: auto; }
+.vol-wrap input { width: 80px; }
 
-.btn-gen:hover { background: #2470d8; }
-.btn-gen:disabled { opacity: 0.45; cursor: not-allowed; }
-
-.btn-regen {
-  padding: 10px 16px;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  color: var(--muted);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px;
-  cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
-}
-
-.btn-regen:hover { border-color: var(--cyan); color: var(--cyan); }
-.btn-regen:disabled { opacity: 0.3; cursor: not-allowed; }
-
-/* LOADING BARS */
-.loading-bars {
-  display: none;
-  align-items: flex-end;
-  gap: 4px;
-  height: 28px;
-  margin-bottom: 20px;
-}
-
-.loading-bars.active { display: flex; }
-
-.bar {
-  width: 4px;
-  background: var(--cyan);
-  border-radius: 2px;
-  animation: barPulse 1s ease-in-out infinite;
-}
-
-.bar:nth-child(1) { animation-delay: 0s; }
-.bar:nth-child(2) { animation-delay: 0.1s; }
-.bar:nth-child(3) { animation-delay: 0.2s; }
-.bar:nth-child(4) { animation-delay: 0.3s; }
-.bar:nth-child(5) { animation-delay: 0.4s; }
-.bar:nth-child(6) { animation-delay: 0.5s; }
-.bar:nth-child(7) { animation-delay: 0.6s; }
-.bar:nth-child(8) { animation-delay: 0.7s; }
-
-@keyframes barPulse {
-  0%, 100% { height: 6px; opacity: 0.4; }
-  50% { height: 24px; opacity: 1; }
-}
-
-/* TRACK CARDS */
-.playlist-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.track-card {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  padding: 14px 16px;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.track-card:hover {
-  border-color: var(--blue);
-  box-shadow: 0 0 16px rgba(27,94,190,0.12);
-}
-
-.tc-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 6px;
-}
-
-.tc-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.tc-artist {
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.tc-year {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 11px;
-  color: var(--muted);
-  flex-shrink: 0;
-  margin-left: 12px;
-}
-
-.tc-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 8px 0;
-}
-
-.tag {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-  color: var(--blue);
-  border: 1px solid var(--blue);
-  border-radius: 2px;
-  padding: 2px 7px;
-  letter-spacing: 0.06em;
-}
-
-.tc-reason {
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 10px;
-  line-height: 1.5;
-}
-
-.tc-links { display: flex; gap: 8px; }
-
-.btn-link {
+.btn-lyrics {
   padding: 6px 14px;
   font-family: 'IBM Plex Mono', monospace;
   font-size: 10px;
   letter-spacing: 0.06em;
-  border-radius: 2px;
-  text-decoration: none;
-  transition: background 0.15s;
-  border: 1px solid transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  background: none;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-left: 8px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.btn-lyrics:hover, .btn-lyrics.active { color: var(--cyan); border-color: var(--cyan); }
+
+/* LYRICS PANE */
+.lyrics-pane {
+  display: none;
+  margin-top: 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+.lyrics-pane.open { display: block; }
+.lyrics-pane h4 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--cyan);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.lyrics-text {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+.lyrics-meta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 12px;
 }
 
-.btn-yt {
-  background: rgba(255,50,50,0.12);
-  color: #ff6b6b;
-  border-color: rgba(255,50,50,0.3);
-}
+/* EMBED */
+.embed-wrap { display: none; margin: 12px 0; border: 1px solid var(--border); border-radius: 3px; overflow: hidden; }
+.embed-wrap.active { display: block; }
+.embed-wrap iframe { width: 100%; height: 300px; border: none; display: block; }
 
+/* QUEUE */
+.queue { margin-top: 14px; }
+.queue-title { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.queue-item { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 3px; cursor: pointer; transition: background 0.15s; font-size: 13px; }
+.queue-item:hover { background: rgba(27,94,190,0.15); }
+.queue-item.active { background: rgba(0,207,255,0.08); color: var(--cyan); }
+.queue-item .qi-num { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); width: 18px; flex-shrink: 0; }
+
+/* COLLAPSIBLE SECTIONS */
+.section-toggle {
+  width: 100%;
+  padding: 12px 24px;
+  background: var(--bg);
+  border: none;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.15s;
+}
+.section-toggle:hover { color: var(--text); }
+.section-toggle .arrow { transition: transform 0.2s; }
+.section-toggle.open .arrow { transform: rotate(90deg); }
+
+.section-body { display: none; padding: 20px 24px; }
+.section-body.open { display: block; }
+
+/* MOOD PLAYLIST */
+.mood-textarea {
+  width: 100%;
+  min-height: 60px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--text);
+  outline: none;
+  resize: vertical;
+  margin-bottom: 12px;
+}
+.mood-textarea:focus { border-color: var(--cyan); }
+
+.playlist-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+.track-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 14px;
+  transition: border-color 0.2s;
+}
+.track-card:hover { border-color: var(--blue); }
+.tc-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.tc-title { font-size: 14px; font-weight: 600; }
+.tc-artist { font-size: 12px; color: var(--muted); }
+.tc-year { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--muted); }
+.tc-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0; }
+.tag { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--blue); border: 1px solid var(--blue); border-radius: 2px; padding: 2px 7px; }
+.tc-reason { font-size: 12px; color: var(--muted); margin-bottom: 8px; line-height: 1.5; }
+.tc-links { display: flex; gap: 8px; }
+.btn-link { padding: 5px 12px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; border-radius: 2px; text-decoration: none; border: 1px solid transparent; transition: background 0.15s; }
+.btn-yt { background: rgba(255,50,50,0.12); color: #ff6b6b; border-color: rgba(255,50,50,0.3); }
 .btn-yt:hover { background: rgba(255,50,50,0.22); }
-
-.btn-sc {
-  background: rgba(255,130,0,0.1);
-  color: #ffaa55;
-  border-color: rgba(255,130,0,0.3);
-}
-
+.btn-sc { background: rgba(255,130,0,0.1); color: #ffaa55; border-color: rgba(255,130,0,0.3); }
 .btn-sc:hover { background: rgba(255,130,0,0.2); }
 
-/* SEARCH TAB */
-.search-row { display:flex; gap:10px; margin-bottom:24px; }
-.search-input {
-  flex:1; background:var(--bg); border:1px solid var(--border);
-  border-radius:3px; padding:10px 14px;
-  font-family:'IBM Plex Mono',monospace; font-size:12px;
-  color:var(--text); outline:none; transition:border-color 0.2s;
-}
-.search-input:focus { border-color:var(--cyan); }
-.search-input::placeholder { color:var(--muted); }
+/* SEARCH RESULTS */
+.results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 12px; }
+.result-card { background: var(--bg); border: 1px solid var(--border); border-radius: 3px; overflow: hidden; cursor: pointer; transition: border-color 0.2s; }
+.result-card:hover { border-color: var(--blue); }
+.result-card.active { border-color: var(--cyan); }
+.result-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; background: var(--bg3); }
+.result-thumb-placeholder { width: 100%; aspect-ratio: 16/9; background: var(--bg3); display: flex; align-items: center; justify-content: center; font-size: 22px; color: var(--muted); }
+.result-body { padding: 8px 10px; }
+.result-title { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; line-height: 1.4; }
+.result-meta { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); }
 
-.results-grid {
-  display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
-  gap:10px; margin-bottom:20px;
-}
+/* LOADING */
+.loading-bars { display: none; height: 30px; align-items: center; justify-content: center; gap: 3px; margin: 12px 0; }
+.loading-bars.active { display: flex; }
+.bar { width: 3px; height: 20px; background: var(--cyan); border-radius: 1px; animation: pulse 0.8s ease-in-out infinite; }
+.bar:nth-child(2) { animation-delay: 0.1s; } .bar:nth-child(3) { animation-delay: 0.2s; }
+.bar:nth-child(4) { animation-delay: 0.3s; } .bar:nth-child(5) { animation-delay: 0.4s; }
+.bar:nth-child(6) { animation-delay: 0.5s; } .bar:nth-child(7) { animation-delay: 0.6s; }
+.bar:nth-child(8) { animation-delay: 0.7s; }
+@keyframes pulse { 0%,100% { transform: scaleY(0.4); opacity: 0.4; } 50% { transform: scaleY(1); opacity: 1; } }
 
-.result-card {
-  background:var(--bg); border:1px solid var(--border);
-  border-radius:3px; overflow:hidden; cursor:pointer;
-  transition:border-color 0.2s, box-shadow 0.2s;
-}
-.result-card:hover { border-color:var(--blue); box-shadow:0 0 14px rgba(27,94,190,0.18); }
-.result-card.active { border-color:var(--cyan); box-shadow:0 0 18px rgba(0,207,255,0.2); }
+.error-card { display: none; background: rgba(255,50,50,0.08); border: 1px solid rgba(255,50,50,0.3); border-radius: 3px; padding: 12px; color: #ff6b6b; font-size: 12px; margin: 10px 0; }
 
-.result-thumb {
-  width:100%; aspect-ratio:16/9; object-fit:cover;
-  display:block; background:var(--bg3);
+.toast {
+  position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+  background: var(--blue); color: white; padding: 10px 24px;
+  border-radius: 4px; font-size: 13px; font-family: 'IBM Plex Mono', monospace;
+  opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 999;
 }
-.result-thumb-placeholder {
-  width:100%; aspect-ratio:16/9; background:var(--bg3);
-  display:flex; align-items:center; justify-content:center;
-  font-size:22px; color:var(--muted);
-}
-.result-body { padding:10px 12px; }
-.result-title { font-size:12px; font-weight:600; color:var(--text); margin-bottom:3px; line-height:1.4; }
-.result-meta { font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--muted); }
+.toast.show { opacity: 1; }
 
-.embed-wrap {
-  display:none; margin-bottom:16px;
-  border:1px solid var(--border); border-radius:3px; overflow:hidden;
-}
-.embed-wrap.active { display:block; }
-.embed-wrap iframe { width:100%; height:340px; border:none; display:block; }
-
-.btn-open-yt {
-  display:none; margin-bottom:20px;
-  padding:8px 18px; background:transparent;
-  border:1px solid rgba(255,50,50,0.4); border-radius:3px;
-  color:#ff6b6b; font-family:'IBM Plex Mono',monospace;
-  font-size:10px; letter-spacing:0.08em; cursor:pointer;
-  text-decoration:none; transition:background 0.15s;
-}
-.btn-open-yt:hover { background:rgba(255,50,50,0.1); }
-.btn-open-yt.active { display:inline-flex; align-items:center; gap:6px; }
-
-/* FOOTER */
 footer {
-  margin-top: 36px;
+  margin-top: 28px;
   font-family: 'IBM Plex Mono', monospace;
   font-size: 10px;
   color: var(--muted);
@@ -571,25 +396,24 @@ footer {
 <body>
 
 <div class="header">
-  <div class="logo">Autonomyx<span>From Foundational To Frontier: FullStack AI</span></div>
+  <div class="logo">Autonomyx<span>Music Player</span></div>
+  <button class="share-btn" onclick="shareLink()">SHARE LINK</button>
 </div>
 
-<div class="player-shell">
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('upload')">UPLOAD &amp; PLAY</button>
-    <button class="tab" onclick="switchTab('stream')">STREAM URL</button>
-    <button class="tab" onclick="switchTab('mood')">MOOD PLAYLIST</button>
-    <button class="tab" onclick="switchTab('search')">SEARCH &amp; PLAY</button>
+<div class="shell">
+  <!-- INPUT: Search / URL / Upload -->
+  <div class="input-row">
+    <input class="input-main" type="text" id="mainInput" placeholder="Search songs, paste YouTube/Spotify URL, or stream direct audio URL...">
+    <button class="btn-action" id="goBtn" onclick="handleInput()">GO</button>
+    <button class="btn-upload" onclick="document.getElementById('fileInput').click()">UPLOAD</button>
   </div>
+  <input type="file" id="fileInput" accept="audio/*" multiple onchange="loadFiles(this.files)">
 
-  <!-- UPLOAD TAB -->
-  <div class="panel active" id="panel-upload">
-    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-      <div class="drop-icon">◈</div>
-      <p><strong>Drop audio files here</strong> or click to browse</p>
-      <p style="margin-top:6px;font-size:11px;">MP3 · WAV · OGG · AAC · FLAC</p>
+  <!-- PLAYER -->
+  <div class="player-area">
+    <div class="embed-wrap" id="embedWrap">
+      <iframe id="ytEmbed" allowfullscreen allow="autoplay; encrypted-media"></iframe>
     </div>
-    <input type="file" id="fileInput" accept="audio/*" multiple onchange="loadFiles(this.files)">
 
     <div class="waveform-wrap">
       <canvas id="waveCanvas"></canvas>
@@ -597,7 +421,7 @@ footer {
     </div>
 
     <div class="track-info">
-      <div class="track-name" id="trackName">—</div>
+      <div class="track-name" id="trackName">--</div>
       <div class="track-time" id="trackTime">0:00 / 0:00</div>
     </div>
 
@@ -606,113 +430,179 @@ footer {
     </div>
 
     <div class="controls">
-      <button class="btn-play" id="playBtn" onclick="togglePlay()">▶</button>
+      <button class="btn-play" id="playBtn" onclick="togglePlay()">&#9654;</button>
       <div class="vol-wrap">
         <span class="vol-label">VOL</span>
         <input type="range" id="volBar" min="0" max="1" step="0.01" value="0.8" oninput="setVol(this.value)">
       </div>
+      <button class="btn-lyrics" id="lyricsToggle" onclick="toggleLyrics()">LYRICS</button>
     </div>
 
+    <!-- LYRICS PANE (inline, below player) -->
+    <div class="lyrics-pane" id="lyricsPane">
+      <h4>Lyrics</h4>
+      <div class="lyrics-text" id="lyricsText">Search for a song or play a track to see lyrics here.</div>
+      <div class="lyrics-meta" id="lyricsMeta"></div>
+    </div>
+
+    <!-- SEARCH RESULTS -->
+    <div class="results-grid" id="resultsGrid"></div>
+
+    <div class="error-card" id="errorCard"></div>
+
+    <!-- QUEUE -->
     <div class="queue" id="queueWrap" style="display:none">
       <div class="queue-title">Queue</div>
       <div id="queueList"></div>
     </div>
   </div>
 
-  <!-- STREAM TAB -->
-  <div class="panel" id="panel-stream">
-    <div class="url-row">
-      <input class="url-input" type="text" id="urlInput" placeholder="https://example.com/track.mp3">
-      <button class="btn-load" onclick="loadUrl()">LOAD &amp; PLAY</button>
-    </div>
-    <div class="error-card" id="urlError"></div>
-
-    <div class="waveform-wrap">
-      <canvas id="waveCanvas2"></canvas>
-      <div class="waveform-idle" id="idleMsg2">NO SIGNAL</div>
-    </div>
-
-    <div class="track-info">
-      <div class="track-name" id="trackName2">—</div>
-      <div class="track-time" id="trackTime2">0:00 / 0:00</div>
-    </div>
-
-    <div class="seek-wrap">
-      <input type="range" id="seekBar2" min="0" max="1000" value="0" oninput="seekTo2(this.value)">
-    </div>
-
-    <div class="controls">
-      <button class="btn-play" id="playBtn2" onclick="togglePlay2()">▶</button>
-      <div class="vol-wrap">
-        <span class="vol-label">VOL</span>
-        <input type="range" id="volBar2" min="0" max="1" step="0.01" value="0.8" oninput="setVol2(this.value)">
-      </div>
-    </div>
-  </div>
-
-  <!-- MOOD TAB -->
-  <div class="panel" id="panel-mood">
-    <textarea class="mood-textarea" id="moodInput" placeholder="Describe a mood, activity, or vibe... e.g. 'late night coding session', 'rainy Sunday morning', 'pre-match hype'"></textarea>
-    <div class="mood-actions">
-      <button class="btn-gen" id="genBtn" onclick="generatePlaylist(false)">GENERATE PLAYLIST</button>
-      <button class="btn-regen" id="regenBtn" onclick="generatePlaylist(true)" style="display:none">↺ REGENERATE</button>
+  <!-- MOOD PLAYLIST (collapsible) -->
+  <button class="section-toggle" onclick="toggleSection(this, 'moodBody')">
+    <span class="arrow">&#9654;</span> MOOD PLAYLIST GENERATOR
+  </button>
+  <div class="section-body" id="moodBody">
+    <textarea class="mood-textarea" id="moodInput" placeholder="Describe a mood... e.g. 'late night coding session', 'rainy Sunday morning'"></textarea>
+    <div style="display:flex; gap:8px; margin-bottom:12px;">
+      <button class="btn-action" id="genBtn" onclick="generatePlaylist(false)">GENERATE</button>
+      <button class="btn-action" id="regenBtn" onclick="generatePlaylist(true)" style="display:none;background:transparent;border:1px solid var(--border);color:var(--muted);">REGENERATE</button>
     </div>
     <div class="loading-bars" id="loadingBars">
-      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
     </div>
     <div class="playlist-grid" id="playlistGrid"></div>
   </div>
-  <!-- SEARCH TAB -->
-  <div class="panel" id="panel-search">
-    <div class="search-row">
-      <input class="search-input" type="text" id="searchInput" placeholder="Artist, track, album..." onkeydown="if(event.key==='Enter')doSearch()">
-      <button class="btn-load" onclick="doSearch()">SEARCH</button>
-    </div>
-    <div class="loading-bars" id="searchBars">
-      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div>
-    </div>
-    <div class="embed-wrap" id="embedWrap">
-      <iframe id="ytEmbed" allowfullscreen allow="autoplay; encrypted-media"></iframe>
-    </div>
-    <a class="btn-open-yt" id="openYtBtn" target="_blank">▶ OPEN ON YOUTUBE</a>
-    <div class="results-grid" id="resultsGrid"></div>
-  </div>
-
 </div>
 
-<footer>Autonomyx · From Foundational To Frontier: FullStack AI</footer>
+<div class="toast" id="toast"></div>
+
+<footer>&copy; 2026 <a href="https://www.openautonomyx.com" target="_blank" style="color:var(--cyan);text-decoration:none;">AutonomyX</a> &middot; From Foundational To Frontier: FullStack AI </footer>
 
 <script>
-// ─── TAB SWITCHING ───────────────────────────────────────────────
-function switchTab(id) {
-  document.querySelectorAll('.tab').forEach((t,i) => {
-    t.classList.toggle('active', ['upload','stream','mood','search'][i] === id);
-  });
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('panel-' + id).classList.add('active');
+// ---- UTILS ----
+function fmt(s) { if (!s||isNaN(s)) return '0:00'; const m=Math.floor(s/60),sec=Math.floor(s%60); return m+':'+String(sec).padStart(2,'0'); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
+
+// ---- SHARE LINK ----
+function shareLink() {
+  const input = document.getElementById('mainInput').value.trim();
+  const url = new URL(window.location.href.split('?')[0]);
+  if (input) url.searchParams.set('q', input);
+  navigator.clipboard.writeText(url.toString()).then(() => showToast('Link copied!')).catch(() => showToast('Failed to copy'));
 }
 
-// ─── SHARED AUDIO ENGINE ─────────────────────────────────────────
-let audioCtx, analyser1, analyser2;
-
-function initCtx() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+// ---- SECTION TOGGLE ----
+function toggleSection(btn, bodyId) {
+  btn.classList.toggle('open');
+  document.getElementById(bodyId).classList.toggle('open');
 }
 
-// ─── UPLOAD TAB ──────────────────────────────────────────────────
-const audio1 = new Audio();
-audio1.crossOrigin = 'anonymous';
-let src1, queue = [], qIdx = 0, raf1;
+// ---- LYRICS TOGGLE ----
+function toggleLyrics() {
+  const pane = document.getElementById('lyricsPane');
+  const btn = document.getElementById('lyricsToggle');
+  pane.classList.toggle('open');
+  btn.classList.toggle('active');
+  if (pane.classList.contains('open') && currentTrackName) {
+    fetchLyrics(currentTrackName);
+  }
+}
 
-const canvas1 = document.getElementById('waveCanvas');
-const ctx1 = canvas1.getContext('2d');
+let currentTrackName = '';
 
+async function fetchLyrics(query) {
+  if (!query) return;
+  const textEl = document.getElementById('lyricsText');
+  const metaEl = document.getElementById('lyricsMeta');
+  textEl.textContent = 'Searching lyrics...';
+  metaEl.textContent = '';
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2000,
+        system: 'You are a lyrics assistant. Return ONLY the song lyrics as plain text. Start with the song title and artist on the first line, then a blank line, then the lyrics. If you cannot find exact lyrics, provide your best approximation and note it. No markdown, no code fences.',
+        messages: [{ role: 'user', content: 'Lyrics for: ' + query }]
+      })
+    });
+    const data = await res.json();
+    textEl.textContent = data.content[0].text;
+    metaEl.textContent = 'Powered by AI — lyrics may not be 100% accurate';
+  } catch(e) {
+    textEl.textContent = 'Could not fetch lyrics. Check your connection.';
+  }
+}
+
+// ---- AUDIO ENGINE ----
+let audioCtx, analyser;
+const audio = new Audio();
+audio.crossOrigin = 'anonymous';
+let audioSrc, raf, queue = [], qIdx = 0;
+
+const canvas = document.getElementById('waveCanvas');
+const ctx = canvas.getContext('2d');
+
+function initCtx() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
 function resizeCanvas(c) { c.width = c.offsetWidth * devicePixelRatio; c.height = c.offsetHeight * devicePixelRatio; }
 
+function setupAnalyser() {
+  initCtx();
+  if (audioSrc) { try { audioSrc.disconnect(); } catch(e) {} }
+  audioSrc = audioCtx.createMediaElementSource(audio);
+  analyser = audioCtx.createAnalyser();
+  analyser.fftSize = 2048;
+  audioSrc.connect(analyser);
+  analyser.connect(audioCtx.destination);
+  drawWave();
+}
+
+function drawWave() {
+  cancelAnimationFrame(raf);
+  resizeCanvas(canvas);
+  const buf = new Float32Array(analyser.fftSize);
+  function loop() {
+    raf = requestAnimationFrame(loop);
+    analyser.getFloatTimeDomainData(buf);
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0,0,w,h);
+    ctx.strokeStyle = '#00CFFF';
+    ctx.lineWidth = 1.5 * devicePixelRatio;
+    ctx.beginPath();
+    const step = w / buf.length;
+    buf.forEach((v,i) => { const x = i*step, y = (v*0.8+1)/2*h; i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y); });
+    ctx.stroke();
+    canvas.classList.toggle('paused', audio.paused);
+  }
+  loop();
+}
+
+function togglePlay() {
+  if (!audio.src) return;
+  initCtx();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  if (audio.paused) { audio.play(); document.getElementById('playBtn').innerHTML = '&#10074;&#10074;'; }
+  else { audio.pause(); document.getElementById('playBtn').innerHTML = '&#9654;'; }
+}
+
+audio.addEventListener('timeupdate', () => {
+  if (!audio.duration) return;
+  document.getElementById('seekBar').value = (audio.currentTime / audio.duration) * 1000;
+  document.getElementById('trackTime').textContent = fmt(audio.currentTime) + ' / ' + fmt(audio.duration);
+});
+
+audio.addEventListener('ended', () => {
+  if (qIdx + 1 < queue.length) playTrack(qIdx + 1);
+  else document.getElementById('playBtn').innerHTML = '&#9654;';
+});
+
+function seekTo(v) { if (audio.duration) audio.currentTime = (v/1000) * audio.duration; }
+function setVol(v) { audio.volume = v; }
+
+// ---- FILE UPLOAD ----
 function loadFiles(files) {
   queue = Array.from(files);
   if (!queue.length) return;
@@ -724,270 +614,126 @@ function loadFiles(files) {
 function playTrack(i) {
   if (i < 0 || i >= queue.length) return;
   qIdx = i;
-  const url = URL.createObjectURL(queue[i]);
-  audio1.src = url;
+  audio.src = URL.createObjectURL(queue[i]);
   document.getElementById('idleMsg').style.display = 'none';
-  setupAnalyser1();
-  audio1.play().then(() => { document.getElementById('playBtn').textContent = '❚❚'; }).catch(() => {});
-  document.getElementById('trackName').textContent = queue[i].name.replace(/\.[^.]+$/, '');
+  document.getElementById('embedWrap').classList.remove('active');
+  setupAnalyser();
+  audio.play().then(() => { document.getElementById('playBtn').innerHTML = '&#10074;&#10074;'; }).catch(()=>{});
+  currentTrackName = queue[i].name.replace(/\.[^.]+$/, '');
+  document.getElementById('trackName').textContent = currentTrackName;
   highlightQueue(i);
+  if (document.getElementById('lyricsPane').classList.contains('open')) fetchLyrics(currentTrackName);
 }
-
-function setupAnalyser1() {
-  initCtx();
-  if (src1) { try { src1.disconnect(); } catch(e) {} }
-  src1 = audioCtx.createMediaElementSource(audio1);
-  analyser1 = audioCtx.createAnalyser();
-  analyser1.fftSize = 2048;
-  src1.connect(analyser1);
-  analyser1.connect(audioCtx.destination);
-  drawWave1();
-}
-
-function drawWave1() {
-  cancelAnimationFrame(raf1);
-  resizeCanvas(canvas1);
-  const buf = new Float32Array(analyser1.fftSize);
-  function loop() {
-    raf1 = requestAnimationFrame(loop);
-    analyser1.getFloatTimeDomainData(buf);
-    const w = canvas1.width, h = canvas1.height;
-    ctx1.clearRect(0,0,w,h);
-    ctx1.strokeStyle = '#00CFFF';
-    ctx1.lineWidth = 1.5 * devicePixelRatio;
-    ctx1.beginPath();
-    const step = w / buf.length;
-    buf.forEach((v,i) => {
-      const x = i * step, y = (v * 0.8 + 1) / 2 * h;
-      i === 0 ? ctx1.moveTo(x,y) : ctx1.lineTo(x,y);
-    });
-    ctx1.stroke();
-    canvas1.classList.toggle('paused', audio1.paused);
-  }
-  loop();
-}
-
-function togglePlay() {
-  if (!audio1.src) return;
-  initCtx();
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-  if (audio1.paused) { audio1.play(); document.getElementById('playBtn').textContent = '❚❚'; }
-  else { audio1.pause(); document.getElementById('playBtn').textContent = '▶'; }
-}
-
-audio1.addEventListener('timeupdate', () => {
-  if (!audio1.duration) return;
-  document.getElementById('seekBar').value = (audio1.currentTime / audio1.duration) * 1000;
-  document.getElementById('trackTime').textContent = fmt(audio1.currentTime) + ' / ' + fmt(audio1.duration);
-});
-
-audio1.addEventListener('ended', () => {
-  if (qIdx + 1 < queue.length) playTrack(qIdx + 1);
-  else document.getElementById('playBtn').textContent = '▶';
-});
-
-function seekTo(v) { if (audio1.duration) audio1.currentTime = (v / 1000) * audio1.duration; }
-function setVol(v) { audio1.volume = v; }
 
 function renderQueue() {
   const wrap = document.getElementById('queueWrap');
   const list = document.getElementById('queueList');
   wrap.style.display = queue.length > 1 ? 'block' : 'none';
-  list.innerHTML = queue.map((f,i) => `
-    <div class="queue-item ${i===qIdx?'active':''}" onclick="playTrack(${i})">
-      <span class="qi-num">${String(i+1).padStart(2,'0')}</span>
-      ${f.name.replace(/\.[^.]+$/,'')}
-    </div>`).join('');
+  list.innerHTML = queue.map((f,i) => '<div class="queue-item '+(i===qIdx?'active':'')+'" onclick="playTrack('+i+')"><span class="qi-num">'+String(i+1).padStart(2,'0')+'</span>'+esc(f.name.replace(/\.[^.]+$/,''))+'</div>').join('');
 }
 
-function highlightQueue(i) {
-  document.querySelectorAll('.queue-item').forEach((el,j) => el.classList.toggle('active', j===i));
-}
+function highlightQueue(i) { document.querySelectorAll('.queue-item').forEach((el,j) => el.classList.toggle('active', j===i)); }
 
-// Drag & drop
-const dz = document.getElementById('dropZone');
-dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
-dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
-dz.addEventListener('drop', e => { e.preventDefault(); dz.classList.remove('drag-over'); loadFiles(e.dataTransfer.files); });
-
-// ─── STREAM TAB ──────────────────────────────────────────────────
-const audio2 = new Audio();
-audio2.crossOrigin = 'anonymous';
-let src2, raf2;
-
-const canvas2 = document.getElementById('waveCanvas2');
-const ctx2 = canvas2.getContext('2d');
-
-function loadUrl() {
-  const url = document.getElementById('urlInput').value.trim();
-  const errEl = document.getElementById('urlError');
+// ---- MAIN INPUT HANDLER ----
+function handleInput() {
+  const val = document.getElementById('mainInput').value.trim();
+  if (!val) return;
+  const errEl = document.getElementById('errorCard');
   errEl.style.display = 'none';
-  if (!url) return;
 
-  if (/youtube\.com|youtu\.be/.test(url)) {
-    errEl.textContent = "YouTube links can't be streamed directly. Use the Mood Playlist tab to find it instead.";
-    errEl.style.display = 'block';
+  // YouTube URL
+  const ytMatch = val.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/);
+  if (ytMatch) {
+    playYouTube(ytMatch[1], val);
     return;
   }
 
-  audio2.src = url;
-  document.getElementById('idleMsg2').style.display = 'none';
-  document.getElementById('trackName2').textContent = url.split('/').pop().replace(/\?.*/, '').replace(/\.[^.]+$/, '') || 'Stream';
-  setupAnalyser2();
-  audio2.play()
-    .then(() => { document.getElementById('playBtn2').textContent = '❚❚'; })
-    .catch(() => {
-      errEl.textContent = "This URL couldn't be loaded directly. SoundCloud and some sites block direct embedding — try a direct .mp3 link or download the file and use the Upload tab.";
-      errEl.style.display = 'block';
-    });
-}
-
-function setupAnalyser2() {
-  initCtx();
-  if (src2) { try { src2.disconnect(); } catch(e) {} }
-  src2 = audioCtx.createMediaElementSource(audio2);
-  analyser2 = audioCtx.createAnalyser();
-  analyser2.fftSize = 2048;
-  src2.connect(analyser2);
-  analyser2.connect(audioCtx.destination);
-  drawWave2();
-}
-
-function drawWave2() {
-  cancelAnimationFrame(raf2);
-  resizeCanvas(canvas2);
-  const buf = new Float32Array(analyser2.fftSize);
-  function loop() {
-    raf2 = requestAnimationFrame(loop);
-    analyser2.getFloatTimeDomainData(buf);
-    const w = canvas2.width, h = canvas2.height;
-    ctx2.clearRect(0,0,w,h);
-    ctx2.strokeStyle = '#00CFFF';
-    ctx2.lineWidth = 1.5 * devicePixelRatio;
-    ctx2.beginPath();
-    buf.forEach((v,i) => {
-      const x = i * (w/buf.length), y = (v*0.8+1)/2*h;
-      i===0 ? ctx2.moveTo(x,y) : ctx2.lineTo(x,y);
-    });
-    ctx2.stroke();
-    canvas2.classList.toggle('paused', audio2.paused);
+  // YouTube URL without ID (playlist, channel, etc.)
+  if (/youtube\.com|youtu\.be/.test(val)) {
+    playYouTubeSearch(val);
+    return;
   }
-  loop();
+
+  // Spotify URL — extract track info and search YouTube
+  if (/spotify\.com/.test(val)) {
+    handleSpotify(val);
+    return;
+  }
+
+  // Direct audio URL
+  if (/\.(mp3|ogg|wav|aac|flac|m4a|webm)(\?.*)?$/i.test(val)) {
+    playDirectUrl(val);
+    return;
+  }
+
+  // Otherwise treat as search query
+  doSearch(val);
 }
 
-function togglePlay2() {
-  if (!audio2.src) return;
-  initCtx();
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-  if (audio2.paused) { audio2.play(); document.getElementById('playBtn2').textContent = '❚❚'; }
-  else { audio2.pause(); document.getElementById('playBtn2').textContent = '▶'; }
+function playYouTube(videoId, originalUrl) {
+  document.getElementById('ytEmbed').src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1';
+  document.getElementById('embedWrap').classList.add('active');
+  currentTrackName = 'YouTube: ' + videoId;
+  document.getElementById('trackName').textContent = currentTrackName;
+  document.getElementById('idleMsg').style.display = 'none';
 }
 
-audio2.addEventListener('timeupdate', () => {
-  if (!audio2.duration) return;
-  document.getElementById('seekBar2').value = (audio2.currentTime / audio2.duration) * 1000;
-  document.getElementById('trackTime2').textContent = fmt(audio2.currentTime) + ' / ' + fmt(audio2.duration);
-});
+function playYouTubeSearch(url) {
+  // Open in embed search
+  doSearch(url.replace(/https?:\/\/(www\.)?youtube\.com\/(results\?search_query=)?/, ''));
+}
 
-audio2.addEventListener('ended', () => { document.getElementById('playBtn2').textContent = '▶'; });
-function seekTo2(v) { if (audio2.duration) audio2.currentTime = (v/1000) * audio2.duration; }
-function setVol2(v) { audio2.volume = v; }
-
-// ─── MOOD PLAYLIST ───────────────────────────────────────────────
-let lastMood = '', regenerateCount = 0;
-
-async function generatePlaylist(isRegen) {
-  const mood = document.getElementById('moodInput').value.trim();
-  if (!mood) return;
-  lastMood = mood;
-  if (isRegen) regenerateCount++;
-
-  const genBtn = document.getElementById('genBtn');
-  const regenBtn = document.getElementById('regenBtn');
-  const bars = document.getElementById('loadingBars');
-  const grid = document.getElementById('playlistGrid');
-
-  genBtn.disabled = true;
-  regenBtn.disabled = true;
-  bars.classList.add('active');
-  grid.innerHTML = '';
-
-  const seed = isRegen ? ` (variation ${regenerateCount}, pick different tracks)` : '';
-
+async function handleSpotify(url) {
+  document.getElementById('trackName').textContent = 'Loading Spotify track...';
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: `You are a music curator. Return ONLY a JSON array of 10 track objects. No markdown, no preamble, no explanation, no code fences — just the raw JSON array.
-Each object must have exactly these keys:
-{ "title": string, "artist": string, "year": number, "tags": string[3-4], "reason": string, "youtubeSearchUrl": string, "soundcloudSearchUrl": string }
-Build URLs like: youtubeSearchUrl = "https://www.youtube.com/results?search_query=" + encodeURIComponent(artist + " " + title)
-soundcloudSearchUrl = "https://soundcloud.com/search?q=" + encodeURIComponent(artist + " " + title)
-reason = one sentence explaining why this track fits the mood.`,
-        messages: [{ role: 'user', content: `Generate a playlist for this mood: ${mood}${seed}` }]
+        max_tokens: 200,
+        system: 'Extract the song title and artist from this Spotify URL. Return ONLY a JSON object: {"title":"...","artist":"...","youtubeId":"...or null"}. No markdown.',
+        messages: [{ role: 'user', content: url }]
       })
     });
     const data = await res.json();
-    const text = data.content[0].text.replace(/```json|```/g,'').trim();
-    const tracks = JSON.parse(text);
-    renderPlaylist(tracks);
-    regenBtn.style.display = '';
+    const info = JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
+    if (info.youtubeId) {
+      playYouTube(info.youtubeId);
+    }
+    currentTrackName = info.artist + ' - ' + info.title;
+    document.getElementById('trackName').textContent = currentTrackName;
+    document.getElementById('mainInput').value = info.artist + ' ' + info.title;
+    if (document.getElementById('lyricsPane').classList.contains('open')) fetchLyrics(currentTrackName);
+    if (!info.youtubeId) doSearch(info.artist + ' ' + info.title);
   } catch(e) {
-    grid.innerHTML = `<div class="error-card" style="display:block">Failed to generate playlist. Check your connection and try again.</div>`;
-  } finally {
-    genBtn.disabled = false;
-    regenBtn.disabled = false;
-    bars.classList.remove('active');
+    document.getElementById('errorCard').textContent = 'Could not parse Spotify URL';
+    document.getElementById('errorCard').style.display = 'block';
   }
 }
 
-function renderPlaylist(tracks) {
-  const grid = document.getElementById('playlistGrid');
-  grid.innerHTML = tracks.map((t,i) => `
-    <div class="track-card">
-      <div class="tc-top">
-        <div>
-          <div class="tc-title">${esc(t.title)}</div>
-          <div class="tc-artist">${esc(t.artist)}</div>
-        </div>
-        <div class="tc-year">${t.year}</div>
-      </div>
-      <div class="tc-tags">${(t.tags||[]).map(tag => `<span class="tag">${esc(tag)}</span>`).join('')}</div>
-      <div class="tc-reason">${esc(t.reason)}</div>
-      <div class="tc-links">
-        <a href="${esc(t.youtubeSearchUrl)}" target="_blank" class="btn-link btn-yt">▶ YouTube</a>
-        <a href="${esc(t.soundcloudSearchUrl)}" target="_blank" class="btn-link btn-sc">☁ SoundCloud</a>
-      </div>
-    </div>`).join('');
+function playDirectUrl(url) {
+  audio.src = url;
+  document.getElementById('idleMsg').style.display = 'none';
+  document.getElementById('embedWrap').classList.remove('active');
+  currentTrackName = url.split('/').pop().replace(/\?.*/, '').replace(/\.[^.]+$/, '') || 'Stream';
+  document.getElementById('trackName').textContent = currentTrackName;
+  setupAnalyser();
+  audio.play()
+    .then(() => { document.getElementById('playBtn').innerHTML = '&#10074;&#10074;'; })
+    .catch(() => {
+      document.getElementById('errorCard').textContent = "Couldn't load this URL. Try a direct .mp3 link or upload the file.";
+      document.getElementById('errorCard').style.display = 'block';
+    });
+  if (document.getElementById('lyricsPane').classList.contains('open')) fetchLyrics(currentTrackName);
 }
 
-// ─── UTILS ────────────────────────────────────────────────────────
-function fmt(s) {
-  if (!s || isNaN(s)) return '0:00';
-  const m = Math.floor(s/60), sec = Math.floor(s%60);
-  return m + ':' + String(sec).padStart(2,'0');
-}
-
-function esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// ─── SEARCH & PLAY ───────────────────────────────────────────────
-async function doSearch() {
-  const q = document.getElementById('searchInput').value.trim();
-  if (!q) return;
-  const bars = document.getElementById('searchBars');
+// ---- SEARCH ----
+async function doSearch(q) {
+  const bars = document.getElementById('loadingBars');
   const grid = document.getElementById('resultsGrid');
-  const embedWrap = document.getElementById('embedWrap');
-  const openBtn = document.getElementById('openYtBtn');
   bars.classList.add('active');
   grid.innerHTML = '';
-  embedWrap.classList.remove('active');
-  openBtn.classList.remove('active');
-  document.getElementById('ytEmbed').src = '';
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -995,12 +741,8 @@ async function doSearch() {
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,
-        system: `You are a music search assistant. Return ONLY a JSON array of 6 objects. No markdown, no preamble, no code fences — just the raw JSON array.
-Each object: { "title": string, "artist": string, "year": number, "description": string, "youtubeId": string|null, "youtubeSearchUrl": string }
-youtubeId: the actual YouTube video ID (11 chars) if you are highly confident it exists on YouTube — otherwise null.
-youtubeSearchUrl: "https://www.youtube.com/results?search_query=" + encodeURIComponent(artist + " " + title)
-description: one short sentence about the track.`,
-        messages: [{ role: 'user', content: 'Search YouTube music for: ' + q }]
+        system: 'You are a music search assistant. Return ONLY a JSON array of 6 objects. No markdown, no code fences.\nEach object: {"title":string,"artist":string,"year":number,"description":string,"youtubeId":string|null,"youtubeSearchUrl":string}\nyoutubeId: YouTube video ID (11 chars) if confident, else null.\nyoutubeSearchUrl: "https://www.youtube.com/results?search_query=" + encodeURIComponent(artist + " " + title)',
+        messages: [{ role: 'user', content: 'Search music: ' + q }]
       })
     });
     const data = await res.json();
@@ -1008,7 +750,7 @@ description: one short sentence about the track.`,
     const results = JSON.parse(text);
     renderResults(results);
   } catch(e) {
-    grid.innerHTML = '<div class="error-card" style="display:block;grid-column:1/-1">Search failed. Try again.</div>';
+    grid.innerHTML = '<div class="error-card" style="display:block;grid-column:1/-1">Search failed.</div>';
   } finally {
     bars.classList.remove('active');
   }
@@ -1019,15 +761,12 @@ function renderResults(results) {
   const grid = document.getElementById('resultsGrid');
   grid.innerHTML = results.map((r, i) => {
     const hasId = r.youtubeId && r.youtubeId.length === 11;
-    const thumbHtml = hasId
-      ? '<img class="result-thumb" src="https://img.youtube.com/vi/' + r.youtubeId + '/mqdefault.jpg" alt="" onerror="this.style.display=\'none\'">'
-      : '<div class="result-thumb-placeholder">▶</div>';
-    return '<div class="result-card" id="rc-' + i + '" onclick="playResult(' + i + ')">'
-      + thumbHtml
-      + '<div class="result-body">'
-      + '<div class="result-title">' + esc(r.title) + '</div>'
-      + '<div class="result-meta">' + esc(r.artist) + ' · ' + (r.year||'') + '</div>'
-      + '</div></div>';
+    const thumb = hasId
+      ? '<img class="result-thumb" src="https://img.youtube.com/vi/'+r.youtubeId+'/mqdefault.jpg" onerror="this.style.display=\'none\'">'
+      : '<div class="result-thumb-placeholder">&#9654;</div>';
+    return '<div class="result-card" onclick="playResult('+i+')">'+thumb
+      +'<div class="result-body"><div class="result-title">'+esc(r.title)+'</div>'
+      +'<div class="result-meta">'+esc(r.artist)+' &middot; '+(r.year||'')+'</div></div></div>';
   }).join('');
 }
 
@@ -1035,23 +774,76 @@ function playResult(idx) {
   const r = window._searchResults[idx];
   if (!r) return;
   document.querySelectorAll('.result-card').forEach((c,i) => c.classList.toggle('active', i===idx));
-  const embedWrap = document.getElementById('embedWrap');
-  const openBtn = document.getElementById('openYtBtn');
-  const iframe = document.getElementById('ytEmbed');
+  currentTrackName = r.artist + ' - ' + r.title;
+  document.getElementById('trackName').textContent = currentTrackName;
   if (r.youtubeId && r.youtubeId.length === 11) {
-    iframe.src = 'https://www.youtube.com/embed/' + r.youtubeId + '?autoplay=1';
-    embedWrap.classList.add('active');
-    openBtn.href = 'https://www.youtube.com/watch?v=' + r.youtubeId;
+    playYouTube(r.youtubeId);
   } else {
-    embedWrap.classList.remove('active');
-    iframe.src = '';
-    openBtn.href = r.youtubeSearchUrl;
     window.open(r.youtubeSearchUrl, '_blank');
   }
-  openBtn.textContent = '▶ OPEN ON YOUTUBE';
-  openBtn.classList.add('active');
-  embedWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (document.getElementById('lyricsPane').classList.contains('open')) fetchLyrics(currentTrackName);
 }
+
+// ---- MOOD PLAYLIST ----
+let lastMood = '', regenCount = 0;
+
+async function generatePlaylist(isRegen) {
+  const mood = document.getElementById('moodInput').value.trim();
+  if (!mood) return;
+  lastMood = mood;
+  if (isRegen) regenCount++;
+  const genBtn = document.getElementById('genBtn');
+  const regenBtn = document.getElementById('regenBtn');
+  const bars = document.getElementById('loadingBars');
+  const grid = document.getElementById('playlistGrid');
+  genBtn.disabled = true; regenBtn.disabled = true;
+  bars.classList.add('active'); grid.innerHTML = '';
+  const seed = isRegen ? ' (variation '+regenCount+', pick different tracks)' : '';
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: 'You are a music curator. Return ONLY a JSON array of 10 track objects. No markdown, no code fences.\nEach: {"title":string,"artist":string,"year":number,"tags":string[],"reason":string,"youtubeSearchUrl":string,"soundcloudSearchUrl":string}\nyoutubeSearchUrl = "https://www.youtube.com/results?search_query=" + encodeURIComponent(artist+" "+title)\nsoundcloudSearchUrl = "https://soundcloud.com/search?q=" + encodeURIComponent(artist+" "+title)',
+        messages: [{ role: 'user', content: 'Playlist for: ' + mood + seed }]
+      })
+    });
+    const data = await res.json();
+    const tracks = JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
+    grid.innerHTML = tracks.map(t => '<div class="track-card"><div class="tc-top"><div><div class="tc-title">'+esc(t.title)+'</div><div class="tc-artist">'+esc(t.artist)+'</div></div><div class="tc-year">'+t.year+'</div></div><div class="tc-tags">'+(t.tags||[]).map(tag=>'<span class="tag">'+esc(tag)+'</span>').join('')+'</div><div class="tc-reason">'+esc(t.reason)+'</div><div class="tc-links"><a href="'+esc(t.youtubeSearchUrl)+'" target="_blank" class="btn-link btn-yt">&#9654; YouTube</a><a href="'+esc(t.soundcloudSearchUrl)+'" target="_blank" class="btn-link btn-sc">&#9729; SoundCloud</a></div></div>').join('');
+    regenBtn.style.display = '';
+  } catch(e) {
+    grid.innerHTML = '<div class="error-card" style="display:block">Failed to generate playlist.</div>';
+  } finally {
+    genBtn.disabled = false; regenBtn.disabled = false;
+    bars.classList.remove('active');
+  }
+}
+
+// ---- SHAREABLE URL ----
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const q = params.get('q');
+  if (q) {
+    document.getElementById('mainInput').value = q;
+    setTimeout(() => handleInput(), 500);
+  }
+});
+
+// ---- KEYBOARD SHORTCUT ----
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+});
+
+// ---- DRAG & DROP ----
+document.body.addEventListener('dragover', e => e.preventDefault());
+document.body.addEventListener('drop', e => { e.preventDefault(); if (e.dataTransfer.files.length) loadFiles(e.dataTransfer.files); });
+
+// ---- ENTER KEY ----
+document.getElementById('mainInput').addEventListener('keydown', e => { if (e.key === 'Enter') handleInput(); });
 </script>
 </body>
 </html>
