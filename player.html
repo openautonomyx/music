@@ -821,12 +821,17 @@ function handleInput() {
   doSearch(val);
 }
 
+let ytPlaying = false;
+
 function playYouTube(videoId, originalUrl) {
-  document.getElementById('ytEmbed').src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1';
+  document.getElementById('ytEmbed').src = 'https://www.youtube.com/embed/' + videoId + '?autoplay=1&enablejsapi=1';
   document.getElementById('embedWrap').classList.add('active');
   currentTrackName = 'YouTube: ' + videoId;
   document.getElementById('trackName').textContent = currentTrackName;
   document.getElementById('idleMsg').style.display = 'none';
+  document.getElementById('goBtn').textContent = 'PLAYING';
+  ytPlaying = true;
+  fetchLyrics(document.getElementById('mainInput').value.replace(/https?:\/\/.*/, '').trim() || currentTrackName);
 }
 
 function playYouTubeSearch(url) {
