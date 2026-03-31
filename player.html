@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AutonomyX Music Player — AI-Powered Music Discovery, Streaming & Lyrics</title>
+<title>Autonomyx MusiX — AI-Powered Music Discovery, Streaming & Lyrics</title>
 <meta name="description" content="AI-powered music player by AutonomyX. Search songs, stream YouTube & Spotify, view lyrics, generate mood playlists, and share music with friends. Free and open source.">
 <meta name="keywords" content="music player, AI music, lyrics, mood playlist, YouTube player, Spotify, AutonomyX, open source music player">
 <meta name="author" content="AutonomyX">
@@ -12,27 +12,27 @@
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="AutonomyX Music Player — AI-Powered Music Discovery">
+<meta property="og:title" content="Autonomyx MusiX — AI-Powered Music Discovery">
 <meta property="og:description" content="Search songs, stream YouTube & Spotify, view lyrics, generate mood playlists. Free and open source by AutonomyX.">
 <meta property="og:url" content="https://music.openautonomyx.com">
 <meta property="og:site_name" content="AutonomyX">
-<meta property="og:image" content="https://www.openautonomyx.com/image/layout_set_logo?img_id=72886">
+<meta property="og:image" content="https://music.openautonomyx.com/og-music.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="en_US">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="AutonomyX Music Player — AI-Powered Music Discovery">
+<meta name="twitter:title" content="Autonomyx MusiX — AI-Powered Music Discovery">
 <meta name="twitter:description" content="Search songs, stream YouTube & Spotify, view lyrics, generate mood playlists. Free and open source.">
-<meta name="twitter:image" content="https://www.openautonomyx.com/image/layout_set_logo?img_id=72886">
+<meta name="twitter:image" content="https://music.openautonomyx.com/og-music.png">
 
 <!-- JSON-LD Structured Data -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "AutonomyX Music Player",
+  "name": "Autonomyx MusiX",
   "description": "AI-powered music player with search, streaming, lyrics, and mood-based playlist generation.",
   "url": "https://music.openautonomyx.com",
   "applicationCategory": "MultimediaApplication",
@@ -56,7 +56,7 @@
     "Waveform visualization",
     "Shareable music links"
   ],
-  "screenshot": "https://www.openautonomyx.com/image/layout_set_logo?img_id=72886",
+  "screenshot": "https://music.openautonomyx.com/og-music.png",
   "softwareVersion": "2.0",
   "license": "https://opensource.org/licenses/MIT"
 }
@@ -222,9 +222,10 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px;
   flex-shrink: 0; transition: background 0.2s;
 }
 .btn-play:hover { background: rgba(0,207,255,0.08); }
-.vol-wrap { display: flex; align-items: center; gap: 8px; }
-.vol-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 0.1em; margin-left: auto; }
-.vol-wrap input { width: 80px; }
+.vol-wrap { display: flex; align-items: center; gap: 6px; opacity: 0.4; transition: opacity 0.2s; }
+.vol-wrap:hover { opacity: 1; }
+.vol-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--muted); letter-spacing: 0.1em; margin-left: auto; }
+.vol-wrap input { width: 60px; }
 
 .btn-lyrics {
   padding: 6px 14px;
@@ -243,7 +244,7 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px;
 
 /* LYRICS PANE */
 .lyrics-pane {
-  display: none;
+  display: block;
   margin-top: 16px;
   background: var(--bg);
   border: 1px solid var(--border);
@@ -252,7 +253,21 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px;
   max-height: 400px;
   overflow-y: auto;
 }
-.lyrics-pane.open { display: block; }
+.lyrics-line {
+  padding: 4px 8px;
+  border-radius: 3px;
+  transition: background 0.3s, color 0.3s;
+  line-height: 2;
+  font-size: 14px;
+  color: var(--muted);
+}
+.lyrics-line.active {
+  background: rgba(0,207,255,0.1);
+  color: var(--cyan);
+  font-weight: 600;
+}
+.lyrics-line.past { color: var(--text); opacity: 0.6; }
+
 .lyrics-pane h4 {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 11px;
@@ -397,7 +412,14 @@ footer {
 
 <div class="header">
   <div class="logo">Autonomyx<span>Music Player</span></div>
-  <button class="share-btn" onclick="shareLink()">SHARE LINK</button>
+  <div style="display:flex;gap:6px;margin-left:auto;align-items:center;">
+    <button class="share-btn" onclick="shareLink()">COPY LINK</button>
+    <button class="share-btn" onclick="shareToX()" title="Share on X">&#120143;</button>
+    <button class="share-btn" onclick="shareToLinkedIn()" title="Share on LinkedIn">in</button>
+    <button class="share-btn" onclick="shareToWhatsApp()" title="Share on WhatsApp">WA</button>
+    <button class="share-btn" onclick="shareToFacebook()" title="Share on Facebook">f</button>
+    <button class="share-btn" onclick="shareToTelegram()" title="Share on Telegram">TG</button>
+  </div>
 </div>
 
 <div class="shell">
@@ -485,12 +507,41 @@ function fmt(s) { if (!s||isNaN(s)) return '0:00'; const m=Math.floor(s/60),sec=
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function showToast(msg) { const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
 
-// ---- SHARE LINK ----
-function shareLink() {
+// ---- SHARE ----
+function getShareUrl() {
   const input = document.getElementById('mainInput').value.trim();
   const url = new URL(window.location.href.split('?')[0]);
   if (input) url.searchParams.set('q', input);
-  navigator.clipboard.writeText(url.toString()).then(() => showToast('Link copied!')).catch(() => showToast('Failed to copy'));
+  return url.toString();
+}
+
+function getShareText() {
+  const track = currentTrackName || document.getElementById('mainInput').value.trim();
+  return track ? 'Listen to ' + track + ' on Autonomyx MusiX' : 'Check out Autonomyx MusiX — AI-Powered Music Player';
+}
+
+function shareLink() {
+  navigator.clipboard.writeText(getShareUrl()).then(() => showToast('Link copied!')).catch(() => showToast('Failed to copy'));
+}
+
+function shareToX() {
+  window.open('https://x.com/intent/tweet?text=' + encodeURIComponent(getShareText()) + '&url=' + encodeURIComponent(getShareUrl()), '_blank');
+}
+
+function shareToLinkedIn() {
+  window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(getShareUrl()), '_blank');
+}
+
+function shareToWhatsApp() {
+  window.open('https://wa.me/?text=' + encodeURIComponent(getShareText() + ' ' + getShareUrl()), '_blank');
+}
+
+function shareToFacebook() {
+  window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(getShareUrl()), '_blank');
+}
+
+function shareToTelegram() {
+  window.open('https://t.me/share/url?url=' + encodeURIComponent(getShareUrl()) + '&text=' + encodeURIComponent(getShareText()), '_blank');
 }
 
 // ---- SECTION TOGGLE ----
@@ -499,24 +550,25 @@ function toggleSection(btn, bodyId) {
   document.getElementById(bodyId).classList.toggle('open');
 }
 
-// ---- LYRICS TOGGLE ----
+// ---- LYRICS ----
+let currentTrackName = '';
+let lyricsLines = [];
+let lastLyricsQuery = '';
+
 function toggleLyrics() {
   const pane = document.getElementById('lyricsPane');
   const btn = document.getElementById('lyricsToggle');
-  pane.classList.toggle('open');
+  pane.style.display = pane.style.display === 'none' ? 'block' : 'none';
   btn.classList.toggle('active');
-  if (pane.classList.contains('open') && currentTrackName) {
-    fetchLyrics(currentTrackName);
-  }
 }
 
-let currentTrackName = '';
-
 async function fetchLyrics(query) {
-  if (!query) return;
+  if (!query || query === lastLyricsQuery) return;
+  lastLyricsQuery = query;
   const textEl = document.getElementById('lyricsText');
   const metaEl = document.getElementById('lyricsMeta');
-  textEl.textContent = 'Searching lyrics...';
+  lyricsLines = [];
+  textEl.innerHTML = '<span style="color:var(--muted)">Searching lyrics...</span>';
   metaEl.textContent = '';
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -525,17 +577,50 @@ async function fetchLyrics(query) {
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 2000,
-        system: 'You are a lyrics assistant. Return ONLY the song lyrics as plain text. Start with the song title and artist on the first line, then a blank line, then the lyrics. If you cannot find exact lyrics, provide your best approximation and note it. No markdown, no code fences.',
+        system: 'You are a lyrics assistant. Return ONLY the song lyrics as plain text. Each line of lyrics on its own line. Start with the song title and artist on the first line, then a blank line, then the lyrics. No markdown, no code fences.',
         messages: [{ role: 'user', content: 'Lyrics for: ' + query }]
       })
     });
     const data = await res.json();
-    textEl.textContent = data.content[0].text;
+    const raw = data.content[0].text;
+    lyricsLines = raw.split('\n');
+    renderLyricsLines();
     metaEl.textContent = 'Powered by AI — lyrics may not be 100% accurate';
   } catch(e) {
-    textEl.textContent = 'Could not fetch lyrics. Check your connection.';
+    textEl.innerHTML = '<span style="color:#ff6b6b">Could not fetch lyrics.</span>';
+    lyricsLines = [];
   }
 }
+
+function renderLyricsLines() {
+  const textEl = document.getElementById('lyricsText');
+  textEl.innerHTML = lyricsLines.map((line, i) =>
+    '<div class="lyrics-line" id="ll-' + i + '">' + esc(line || '\u00A0') + '</div>'
+  ).join('');
+}
+
+function updateLyricsHighlight() {
+  if (!lyricsLines.length || !audio.duration) return;
+  const progress = audio.currentTime / audio.duration;
+  const nonEmptyLines = lyricsLines.filter(l => l.trim()).length;
+  if (!nonEmptyLines) return;
+  const currentLineIdx = Math.floor(progress * lyricsLines.length);
+
+  lyricsLines.forEach((_, i) => {
+    const el = document.getElementById('ll-' + i);
+    if (!el) return;
+    el.classList.remove('active', 'past');
+    if (i === currentLineIdx) {
+      el.classList.add('active');
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else if (i < currentLineIdx) {
+      el.classList.add('past');
+    }
+  });
+}
+
+// Hook into audio timeupdate for lyrics sync
+audio.addEventListener('timeupdate', updateLyricsHighlight);
 
 // ---- AUDIO ENGINE ----
 let audioCtx, analyser;
@@ -622,7 +707,7 @@ function playTrack(i) {
   currentTrackName = queue[i].name.replace(/\.[^.]+$/, '');
   document.getElementById('trackName').textContent = currentTrackName;
   highlightQueue(i);
-  if (document.getElementById('lyricsPane').classList.contains('open')) fetchLyrics(currentTrackName);
+  fetchLyrics(currentTrackName);
 }
 
 function renderQueue() {
@@ -704,7 +789,7 @@ async function handleSpotify(url) {
     currentTrackName = info.artist + ' - ' + info.title;
     document.getElementById('trackName').textContent = currentTrackName;
     document.getElementById('mainInput').value = info.artist + ' ' + info.title;
-    if (document.getElementById('lyricsPane').classList.contains('open')) fetchLyrics(currentTrackName);
+    fetchLyrics(currentTrackName);
     if (!info.youtubeId) doSearch(info.artist + ' ' + info.title);
   } catch(e) {
     document.getElementById('errorCard').textContent = 'Could not parse Spotify URL';
@@ -725,7 +810,7 @@ function playDirectUrl(url) {
       document.getElementById('errorCard').textContent = "Couldn't load this URL. Try a direct .mp3 link or upload the file.";
       document.getElementById('errorCard').style.display = 'block';
     });
-  if (document.getElementById('lyricsPane').classList.contains('open')) fetchLyrics(currentTrackName);
+  fetchLyrics(currentTrackName);
 }
 
 // ---- SEARCH ----
@@ -781,7 +866,7 @@ function playResult(idx) {
   } else {
     window.open(r.youtubeSearchUrl, '_blank');
   }
-  if (document.getElementById('lyricsPane').classList.contains('open')) fetchLyrics(currentTrackName);
+  fetchLyrics(currentTrackName);
 }
 
 // ---- MOOD PLAYLIST ----
