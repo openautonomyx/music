@@ -413,6 +413,7 @@ footer {
 <div class="header">
   <div class="logo">Autonomyx<span>MusiX</span></div>
   <div style="display:flex;gap:6px;margin-left:auto;align-items:center;">
+    <button class="share-btn" onclick="openSettings()" title="Settings" style="font-size:14px;">&#9881;</button>
     <button class="share-btn" onclick="shareLink()" title="Copy link"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
     <button class="share-btn" onclick="shareToX()" title="Share on X"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></button>
     <button class="share-btn" onclick="shareToLinkedIn()" title="Share on LinkedIn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></button>
@@ -426,8 +427,7 @@ footer {
   <!-- INPUT ROW: Search + Play/Stop + GO + Upload -->
   <div class="input-row">
     <input class="input-main" type="text" id="mainInput" placeholder="Search songs, paste YouTube/Spotify URL, or stream audio...">
-    <button class="btn-play" id="playBtn" onclick="togglePlay()" style="width:36px;height:36px;font-size:13px;flex-shrink:0;">&#9654;</button>
-    <button class="btn-action" id="goBtn" onclick="handleInput()">GO</button>
+    <button class="btn-action" id="goBtn" onclick="handleGo()">PLAY</button>
     <button class="btn-upload" onclick="document.getElementById('fileInput').click()">UPLOAD</button>
   </div>
   <input type="file" id="fileInput" accept="audio/*" multiple onchange="loadFiles(this.files)">
@@ -487,11 +487,31 @@ footer {
   </div>
 </div>
 
+<!-- SETTINGS MODAL -->
+<div id="settingsModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;display:none;align-items:center;justify-content:center;">
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:24px;width:400px;max-width:90%;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--cyan);letter-spacing:0.1em;">SETTINGS</span>
+      <button onclick="closeSettings()" style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;">&times;</button>
+    </div>
+    <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:6px;">Anthropic API Key (optional — enables AI search & lyrics)</label>
+    <input type="password" id="apiKeyInput" class="input-main" placeholder="sk-ant-..." style="width:100%;margin-bottom:12px;font-size:11px;">
+    <p style="font-size:10px;color:var(--muted);margin-bottom:16px;line-height:1.5;">Without API key: uses free lyrics (lyrics.ovh) and YouTube search (Invidious). With API key: AI-powered search, lyrics, and mood playlists.</p>
+    <button class="btn-action" onclick="saveSettings()" style="width:100%;">SAVE</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <footer>&copy; 2026 <a href="https://www.openautonomyx.com" target="_blank" style="color:var(--cyan);text-decoration:none;">AutonomyX</a> &middot; From Foundational To Frontier: FullStack AI </footer>
 
 <script>
+// ---- SETTINGS ----
+function getApiKey() { return localStorage.getItem('autonomyx_api_key') || ''; }
+function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; document.getElementById('apiKeyInput').value = getApiKey(); }
+function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
+function saveSettings() { const key = document.getElementById('apiKeyInput').value.trim(); if (key) localStorage.setItem('autonomyx_api_key', key); else localStorage.removeItem('autonomyx_api_key'); closeSettings(); showToast(key ? 'API key saved' : 'API key removed'); }
+
 // ---- UTILS ----
 function fmt(s) { if (!s||isNaN(s)) return '0:00'; const m=Math.floor(s/60),sec=Math.floor(s%60); return m+':'+String(sec).padStart(2,'0'); }
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -560,26 +580,63 @@ async function fetchLyrics(query) {
   lyricsLines = [];
   textEl.innerHTML = '<span style="color:var(--muted)">Searching lyrics...</span>';
   metaEl.textContent = '';
+
+  // Parse artist and title from "Artist - Title" or just use query
+  let artist = '', title = query;
+  if (query.includes(' - ')) { const parts = query.split(' - '); artist = parts[0].trim(); title = parts[1].trim(); }
+
+  // Try free API first: lyrics.ovh
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 2000,
-        system: 'You are a lyrics assistant. Return ONLY the song lyrics as plain text. Each line of lyrics on its own line. Start with the song title and artist on the first line, then a blank line, then the lyrics. No markdown, no code fences.',
-        messages: [{ role: 'user', content: 'Lyrics for: ' + query }]
-      })
-    });
-    const data = await res.json();
-    const raw = data.content[0].text;
-    lyricsLines = raw.split('\n');
-    renderLyricsLines();
-    metaEl.textContent = 'Powered by AI — lyrics may not be 100% accurate';
-  } catch(e) {
-    textEl.innerHTML = '<span style="color:#ff6b6b">Could not fetch lyrics.</span>';
-    lyricsLines = [];
+    const freeRes = await fetch('https://api.lyrics.ovh/v1/' + encodeURIComponent(artist || query) + '/' + encodeURIComponent(title));
+    if (freeRes.ok) {
+      const freeData = await freeRes.json();
+      if (freeData.lyrics && freeData.lyrics.trim().length > 20) {
+        lyricsLines = freeData.lyrics.split('\n');
+        renderLyricsLines();
+        metaEl.textContent = 'Source: lyrics.ovh';
+        return;
+      }
+    }
+  } catch(e) {}
+
+  // Try lrclib.net (free, has synced lyrics)
+  try {
+    const lrcRes = await fetch('https://lrclib.net/api/search?q=' + encodeURIComponent(query));
+    if (lrcRes.ok) {
+      const lrcData = await lrcRes.json();
+      if (lrcData.length > 0 && (lrcData[0].plainLyrics || lrcData[0].syncedLyrics)) {
+        const raw = lrcData[0].plainLyrics || lrcData[0].syncedLyrics.replace(/\[\d+:\d+\.\d+\]/g, '');
+        lyricsLines = raw.split('\n');
+        renderLyricsLines();
+        metaEl.textContent = 'Source: lrclib.net — ' + esc(lrcData[0].artistName + ' - ' + lrcData[0].trackName);
+        return;
+      }
+    }
+  } catch(e) {}
+
+  // Fallback: Anthropic API (if key is set)
+  const apiKey = getApiKey();
+  if (apiKey) {
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-dangerous-direct-browser-access': 'true' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 2000,
+          system: 'You are a lyrics assistant. Return ONLY the song lyrics as plain text. Each line on its own line. Start with title and artist, then blank line, then lyrics. No markdown.',
+          messages: [{ role: 'user', content: 'Lyrics for: ' + query }]
+        })
+      });
+      const data = await res.json();
+      lyricsLines = data.content[0].text.split('\n');
+      renderLyricsLines();
+      metaEl.textContent = 'Powered by AI — lyrics may not be 100% accurate';
+      return;
+    } catch(e) {}
   }
+
+  textEl.innerHTML = '<span style="color:var(--muted)">Lyrics not found. Add an Anthropic API key in settings for AI-powered lyrics.</span>';
 }
 
 function renderLyricsLines() {
@@ -655,12 +712,30 @@ function drawWave() {
   loop();
 }
 
+function handleGo() {
+  const btn = document.getElementById('goBtn');
+  if (!audio.paused && audio.src) {
+    audio.pause();
+    btn.textContent = 'PLAY';
+    return;
+  }
+  if (audio.paused && audio.src && !document.getElementById('mainInput').value.trim()) {
+    initCtx();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    audio.play();
+    btn.textContent = 'PAUSE';
+    return;
+  }
+  handleInput();
+}
+
 function togglePlay() {
   if (!audio.src) return;
   initCtx();
   if (audioCtx.state === 'suspended') audioCtx.resume();
-  if (audio.paused) { audio.play(); document.getElementById('playBtn').innerHTML = '&#10074;&#10074;'; }
-  else { audio.pause(); document.getElementById('playBtn').innerHTML = '&#9654;'; }
+  const btn = document.getElementById('goBtn');
+  if (audio.paused) { audio.play(); btn.textContent = 'PAUSE'; }
+  else { audio.pause(); btn.textContent = 'PLAY'; }
 }
 
 audio.addEventListener('timeupdate', () => {
@@ -810,26 +885,52 @@ async function doSearch(q) {
   const grid = document.getElementById('resultsGrid');
   bars.classList.add('active');
   grid.innerHTML = '';
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: 'You are a music search assistant. Return ONLY a JSON array of 6 objects. No markdown, no code fences.\nEach object: {"title":string,"artist":string,"year":number,"description":string,"youtubeId":string|null,"youtubeSearchUrl":string}\nyoutubeId: YouTube video ID (11 chars) if confident, else null.\nyoutubeSearchUrl: "https://www.youtube.com/results?search_query=" + encodeURIComponent(artist + " " + title)',
-        messages: [{ role: 'user', content: 'Search music: ' + q }]
-      })
-    });
-    const data = await res.json();
-    const text = data.content[0].text.replace(/```json|```/g,'').trim();
-    const results = JSON.parse(text);
-    renderResults(results);
-  } catch(e) {
-    grid.innerHTML = '<div class="error-card" style="display:block;grid-column:1/-1">Search failed.</div>';
-  } finally {
-    bars.classList.remove('active');
+
+  // Try free Invidious API first
+  const invidiousInstances = ['https://vid.puffyan.us', 'https://invidious.snopyta.org', 'https://inv.nadeko.net'];
+  for (const instance of invidiousInstances) {
+    try {
+      const res = await fetch(instance + '/api/v1/search?q=' + encodeURIComponent(q + ' music') + '&type=video&sort_by=relevance');
+      if (res.ok) {
+        const data = await res.json();
+        const results = data.slice(0, 6).map(v => ({
+          title: v.title || '',
+          artist: v.author || '',
+          year: v.published ? new Date(v.published * 1000).getFullYear() : '',
+          description: v.description ? v.description.substring(0, 80) : '',
+          youtubeId: v.videoId || null,
+          youtubeSearchUrl: 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q)
+        }));
+        if (results.length > 0) { renderResults(results); bars.classList.remove('active'); return; }
+      }
+    } catch(e) { continue; }
   }
+
+  // Fallback: Anthropic API
+  const apiKey = getApiKey();
+  if (apiKey) {
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-dangerous-direct-browser-access': 'true' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          system: 'You are a music search assistant. Return ONLY a JSON array of 6 objects. No markdown, no code fences.\nEach: {"title":string,"artist":string,"year":number,"description":string,"youtubeId":string|null,"youtubeSearchUrl":string}',
+          messages: [{ role: 'user', content: 'Search music: ' + q }]
+        })
+      });
+      const data = await res.json();
+      const results = JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
+      renderResults(results);
+      bars.classList.remove('active');
+      return;
+    } catch(e) {}
+  }
+
+  // Last resort: open YouTube search directly
+  grid.innerHTML = '<div style="text-align:center;padding:20px;"><a href="https://www.youtube.com/results?search_query=' + encodeURIComponent(q) + '" target="_blank" class="btn-link btn-yt" style="font-size:12px;padding:10px 20px;">Search on YouTube</a></div>';
+  bars.classList.remove('active');
 }
 
 function renderResults(results) {
